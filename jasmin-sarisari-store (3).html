@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jasmin Sari-Sari Store</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary:#f97316;--primary-dark:#ea580c;--primary-light:#fed7aa;
+  --secondary:#0ea5e9;--accent:#22c55e;--accent-dark:#16a34a;
+  --danger:#ef4444;--warning:#f59e0b;--purple:#8b5cf6;
+  --bg:#fef9f5;--card:#fff;--sidebar:#1c1917;--sidebar-text:#d6d3d1;
+  --text:#1c1917;--text-muted:#78716c;--border:#e7e5e4;--input-bg:#fafaf9;
+  --shadow:0 4px 20px rgba(0,0,0,.08);--shadow-lg:0 8px 40px rgba(0,0,0,.14);
+  --r:14px;--rs:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;overflow-x:hidden}
+
+/* SETUP */
+#setupScreen{position:fixed;inset:0;background:#1c1917;z-index:999;display:flex;align-items:center;justify-content:center;padding:20px}
+.setup-card{background:#fff;border-radius:20px;padding:36px;max-width:460px;width:100%;box-shadow:var(--shadow-lg)}
+.setup-logo{text-align:center;margin-bottom:28px}
+.setup-logo .emoji{font-size:52px;display:block;margin-bottom:8px}
+.setup-logo h1{font-family:'Nunito',sans-serif;font-weight:900;font-size:24px;margin-bottom:4px}
+.setup-logo p{color:var(--text-muted);font-size:13px}
+.setup-note{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:var(--rs);padding:12px 14px;font-size:12.5px;margin-bottom:20px;line-height:1.7}
+.setup-divider{text-align:center;color:var(--text-muted);font-size:12px;margin:14px 0;position:relative}
+.setup-divider::before,.setup-divider::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:var(--border)}
+.setup-divider::before{left:0}.setup-divider::after{right:0}
+#connectStatus{margin-top:12px;font-size:13px;font-weight:600;text-align:center;min-height:20px}
+
+/* SIDEBAR */
+.sidebar{width:240px;background:var(--sidebar);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;transition:transform .3s}
+.sb-logo{padding:22px 18px 18px;border-bottom:1px solid #292524}
+.sb-logo-icon{width:40px;height:40px;background:var(--primary);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:8px}
+.sb-logo h2{font-family:'Nunito',sans-serif;font-weight:900;font-size:17px;color:#fff;line-height:1.2}
+.sb-logo small{font-size:10px;color:var(--primary);font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.nav-sec{padding:10px 14px 4px;font-size:10px;color:#57534e;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-top:6px}
+.nav-item{display:flex;align-items:center;gap:11px;padding:10px 14px;margin:2px 8px;border-radius:var(--rs);cursor:pointer;color:var(--sidebar-text);font-size:13px;font-weight:500;transition:all .18s;user-select:none}
+.nav-item:hover{background:#292524;color:#fff}
+.nav-item.active{background:var(--primary);color:#fff;font-weight:700}
+.nav-item .ni{font-size:17px;width:20px;text-align:center}
+.sb-foot{margin-top:auto;padding:14px;border-top:1px solid #292524;font-size:11px;color:#57534e;text-align:center}
+
+/* OVERLAY */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99}
+.overlay.show{display:block}
+
+/* MAIN */
+.main{margin-left:240px;flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:var(--card);border-bottom:1px solid var(--border);padding:0 22px;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.menu-btn{display:none;background:none;border:none;font-size:22px;cursor:pointer;color:var(--text)}
+.page-title{font-family:'Nunito',sans-serif;font-weight:800;font-size:19px}
+.date-badge{background:var(--primary-light);color:var(--primary-dark);padding:5px 13px;border-radius:20px;font-size:12px;font-weight:700}
+.content{padding:22px;flex:1}
+
+/* PAGES */
+.page{display:none}.page.active{display:block}
+
+/* STAT CARDS */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:22px}
+.stat-card{background:var(--card);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);border-left:4px solid transparent;position:relative;overflow:hidden}
+.stat-card.c-or{border-left-color:var(--primary)}.stat-card.c-gr{border-left-color:var(--accent)}.stat-card.c-bl{border-left-color:var(--secondary)}.stat-card.c-pu{border-left-color:var(--purple)}.stat-card.c-re{border-left-color:var(--danger)}.stat-card.c-ye{border-left-color:var(--warning)}
+.stat-label{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--text-muted)}
+.stat-value{font-family:'Nunito',sans-serif;font-size:24px;font-weight:900;color:var(--text);margin:3px 0}
+.stat-icon{font-size:30px;position:absolute;top:14px;right:14px;opacity:.12}
+
+/* CARD */
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:18px;margin-bottom:18px}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.card-title{font-family:'Nunito',sans-serif;font-weight:800;font-size:15px}
+
+/* TABLE */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--bg);padding:9px 13px;text-align:left;font-weight:700;font-size:10.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--text-muted);border-bottom:2px solid var(--border)}
+td{padding:10px 13px;border-bottom:1px solid var(--border);color:var(--text)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafaf9}
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700}
+.b-gr{background:#dcfce7;color:#166534}.b-re{background:#fee2e2;color:#991b1b}.b-or{background:#ffedd5;color:#9a3412}.b-bl{background:#dbeafe;color:#1e40af}.b-ye{background:#fef9c3;color:#854d0e}.b-pu{background:#ede9fe;color:#5b21b6}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--rs);border:none;cursor:pointer;font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;transition:all .18s;white-space:nowrap}
+.btn-pr{background:var(--primary);color:#fff}.btn-pr:hover{background:var(--primary-dark);transform:translateY(-1px)}
+.btn-se{background:var(--secondary);color:#fff}.btn-se:hover{background:#0284c7}
+.btn-su{background:var(--accent);color:#fff}.btn-su:hover{background:var(--accent-dark)}
+.btn-da{background:var(--danger);color:#fff}.btn-da:hover{background:#dc2626}
+.btn-ol{background:transparent;color:var(--primary);border:2px solid var(--primary)}.btn-ol:hover{background:var(--primary-light)}
+.btn-gy{background:#f5f5f4;color:var(--text);border:1px solid var(--border)}.btn-gy:hover{background:#e7e5e4}
+.btn-sm{padding:5px 11px;font-size:11.5px}
+.btn-full{width:100%;justify-content:center;padding:11px}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+
+/* FORMS */
+.fg{margin-bottom:14px}
+.fl{display:block;font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+.fc{width:100%;padding:9px 13px;background:var(--input-bg);border:2px solid var(--border);border-radius:var(--rs);font-family:'Poppins',sans-serif;font-size:13px;color:var(--text);transition:border-color .18s}
+.fc:focus{outline:none;border-color:var(--primary);background:#fff}
+.fr2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center;padding:14px}
+.modal-overlay.show{display:flex}
+.modal{background:var(--card);border-radius:var(--r);width:100%;max-width:500px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);animation:slideUp .22s ease}
+@keyframes slideUp{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-head{padding:18px 22px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-family:'Nunito',sans-serif;font-weight:800;font-size:17px}
+.modal-body{padding:18px 22px}
+.modal-foot{padding:14px 22px;border-top:1px solid var(--border);display:flex;gap:9px;justify-content:flex-end}
+.close-btn{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-muted);line-height:1}
+
+/* POS */
+.pos-layout{display:grid;grid-template-columns:1fr 340px;gap:18px;align-items:start}
+.pos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;max-height:68vh;overflow-y:auto;padding-right:3px}
+.prod-tile{background:var(--card);border-radius:var(--r);padding:13px 9px;text-align:center;cursor:pointer;border:2px solid var(--border);transition:all .18s;position:relative}
+.prod-tile:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:var(--shadow)}
+.prod-tile.oos{opacity:.4;cursor:not-allowed}
+.prod-emoji{font-size:30px;margin-bottom:5px}
+.prod-name{font-size:11.5px;font-weight:700;color:var(--text);line-height:1.3}
+.prod-price{font-size:13px;font-weight:800;color:var(--primary);margin-top:3px}
+.prod-stock{font-size:10px;color:var(--text-muted)}
+.low-badge{position:absolute;top:5px;right:5px;background:var(--warning);color:#fff;font-size:8.5px;font-weight:700;padding:2px 5px;border-radius:4px}
+
+/* CART */
+.cart-panel{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);display:flex;flex-direction:column;position:sticky;top:78px;max-height:calc(100vh - 96px)}
+.cart-head{padding:14px 16px;border-bottom:1px solid var(--border);font-family:'Nunito',sans-serif;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:space-between}
+.cart-items{flex:1;overflow-y:auto;padding:10px}
+.cart-item{display:flex;align-items:center;gap:9px;padding:7px;border-radius:var(--rs);margin-bottom:7px;background:var(--bg)}
+.cart-item-name{flex:1;font-size:12.5px;font-weight:600}
+.cart-item-price{font-size:12.5px;font-weight:800;color:var(--primary);white-space:nowrap}
+.qty-ctrl{display:flex;align-items:center;gap:5px}
+.qty-btn{width:22px;height:22px;border-radius:50%;border:none;background:var(--primary);color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;line-height:1}
+.qty-val{font-size:13px;font-weight:800;min-width:18px;text-align:center}
+.cart-foot{padding:12px 14px;border-top:1px solid var(--border)}
+.cart-tot{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+.cart-tot-lbl{font-weight:700;font-size:13.5px}
+.cart-tot-val{font-family:'Nunito',sans-serif;font-weight:900;font-size:21px;color:var(--primary)}
+.empty-cart{text-align:center;padding:28px;color:var(--text-muted);font-size:13px}
+.mob-cart-btn{display:none;position:fixed;bottom:18px;right:18px;background:var(--primary);color:#fff;border:none;border-radius:50px;padding:13px 18px;font-size:13.5px;font-weight:700;cursor:pointer;z-index:88;box-shadow:var(--shadow-lg);align-items:center;gap:7px}
+
+/* GCASH */
+.gcash-hdr{background:linear-gradient(135deg,#38bdf8,#0284c7);border-radius:var(--r);padding:22px;color:#fff;margin-bottom:18px;position:relative;overflow:hidden}
+.gcash-hdr::before{content:'💙';position:absolute;right:20px;top:50%;transform:translateY(-50%);font-size:56px;opacity:.18}
+.gcash-bal{font-family:'Nunito',sans-serif;font-size:34px;font-weight:900}
+
+/* DEBIT HDR */
+.debit-hdr{background:linear-gradient(135deg,#f97316,#dc2626);border-radius:var(--r);padding:22px;color:#fff;margin-bottom:18px;position:relative;overflow:hidden}
+.debit-hdr::before{content:'📋';position:absolute;right:20px;top:50%;transform:translateY(-50%);font-size:56px;opacity:.18}
+
+/* FILTER BAR */
+.filter-bar{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.search-inp{flex:1;min-width:150px;padding:8px 13px;background:var(--card);border:2px solid var(--border);border-radius:var(--rs);font-family:'Poppins',sans-serif;font-size:13px}
+.search-inp:focus{outline:none;border-color:var(--primary)}
+.cat-chip{padding:6px 13px;border-radius:20px;font-size:11.5px;font-weight:700;cursor:pointer;border:2px solid var(--border);background:var(--card);color:var(--text-muted);transition:all .18s}
+.cat-chip.active{background:var(--primary);border-color:var(--primary);color:#fff}
+
+/* BAR CHART */
+.bar-chart{display:flex;align-items:flex-end;gap:7px;height:150px;padding:0 4px}
+.bar-grp{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+.bar{width:100%;border-radius:5px 5px 0 0;transition:height .5s ease;cursor:pointer;position:relative}
+.bar:hover::after{content:attr(data-val);position:absolute;top:-22px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;white-space:nowrap}
+.bar-lbl{font-size:9.5px;color:var(--text-muted);font-weight:600}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+
+/* PAYMENT */
+.pay-inp-wrap{position:relative}
+.pay-inp-wrap .currency{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-weight:700;color:var(--text-muted)}
+.pay-inp-wrap .fc{padding-left:26px;font-size:18px;font-weight:800}
+.change-box{background:var(--bg);border-radius:var(--rs);padding:11px 14px;display:flex;justify-content:space-between;margin-top:10px}
+
+/* TOAST */
+#toasts{position:fixed;bottom:22px;right:22px;z-index:998;display:flex;flex-direction:column;gap:7px}
+.toast{background:#1c1917;color:#fff;padding:11px 16px;border-radius:var(--rs);font-size:12.5px;font-weight:600;box-shadow:var(--shadow-lg);animation:toastIn .25s ease;display:flex;align-items:center;gap:7px;max-width:280px}
+.toast.t-ok{background:#15803d}.toast.t-er{background:#dc2626}.toast.t-in{background:#0284c7}
+@keyframes toastIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* SPINNER */
+.spin{width:22px;height:22px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:sp .7s linear infinite;margin:0 auto}
+@keyframes sp{to{transform:rotate(360deg)}}
+.loading-cell{text-align:center;padding:30px!important}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}.menu-btn{display:block}
+  .pos-layout{grid-template-columns:1fr}
+  .cart-panel{position:fixed;bottom:0;left:0;right:0;top:auto;max-height:55vh;z-index:90;border-radius:var(--r) var(--r) 0 0;display:none}
+  .cart-panel.show{display:flex}
+  .mob-cart-btn{display:flex}
+  .two-col{grid-template-columns:1fr}
+  .fr2{grid-template-columns:1fr}
+  .fr3{grid-template-columns:1fr 1fr}
+}
+@media(max-width:600px){
+  .content{padding:12px}.stats-grid{grid-template-columns:repeat(2,1fr);gap:9px}
+  .stat-value{font-size:20px}.fr3{grid-template-columns:1fr}
+  #toasts{left:12px;right:12px;bottom:12px}
+  .setup-card{padding:22px}
+}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+</style>
+</head>
+<body>
+
+<!-- SETUP SCREEN -->
+<div id="setupScreen">
+  <div class="setup-card">
+    <div class="setup-logo">
+      <span class="emoji">🏪</span>
+      <h1>Jasmin Sari-Sari Store</h1>
+      
+    </div>
+   
+    <div class="fg">
+      <label class="fl">Supabase Project URL</label>
+      <input id="sbUrl" class="fc" type="text" placeholder="https://xxxxxxxxxxxx.supabase.co">
+    </div>
+    <div class="fg">
+      <label class="fl">Supabase Anon Key</label>
+      <input id="sbKey" class="fc" type="text" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+    </div>
+    <button id="connectBtn" class="btn btn-pr btn-full" style="margin-top:4px;">🔗 Connect & Start</button>
+    <div id="connectStatus"></div>
+    <div class="setup-divider">or</div>
+    <button id="demoBtn" class="btn btn-gy btn-full">🎭 Use Demo Mode (no database)</button>
+  </div>
+</div>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay"></div>
+
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-icon">🏪</div>
+    <h2>Jasmin Store</h2>
+    <small>Management System</small>
+  </div>
+  <div class="nav-sec">Main</div>
+  <div class="nav-item active" data-page="overview"><span class="ni">📊</span> Overview</div>
+  <div class="nav-item" data-page="pos"><span class="ni">🛒</span> Point of Sale</div>
+  <div class="nav-sec">Store</div>
+  <div class="nav-item" data-page="inventory"><span class="ni">📦</span> Inventory</div>
+  <div class="nav-item" data-page="products"><span class="ni">🗂️</span> Product List</div>
+  <div class="nav-sec">Finance</div>
+  <div class="nav-item" data-page="gcash"><span class="ni">💙</span> GCash</div>
+  <div class="nav-item" data-page="debit"><span class="ni">📋</span> Debit Records</div>
+  <div class="sb-foot">Jasmin Store © 2025 · v2.0</div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="menu-btn" id="menuBtn">☰</button>
+      <div class="page-title" id="pageTitle">📊 Overview</div>
+    </div>
+    <div class="date-badge" id="dateDisplay"></div>
+  </div>
+  <div class="content">
+
+    <!-- OVERVIEW -->
+    <div class="page active" id="page-overview">
+      <div class="stats-grid">
+        <div class="stat-card c-or"><div class="stat-label">Today's Sales</div><div class="stat-value" id="ov-sales">₱0</div><div class="stat-icon">💰</div></div>
+        <div class="stat-card c-gr"><div class="stat-label">Today's Profit</div><div class="stat-value" id="ov-profit">₱0</div><div class="stat-icon">📈</div></div>
+        <div class="stat-card c-bl"><div class="stat-label">Transactions</div><div class="stat-value" id="ov-txn">0</div><div class="stat-icon">🧾</div></div>
+        <div class="stat-card c-pu"><div class="stat-label">GCash Balance</div><div class="stat-value" id="ov-gcash">₱0</div><div class="stat-icon">📱</div></div>
+        <div class="stat-card c-re"><div class="stat-label">Total Debit</div><div class="stat-value" id="ov-debit">₱0</div><div class="stat-icon">📋</div></div>
+        <div class="stat-card c-ye"><div class="stat-label">Low Stock Items</div><div class="stat-value" id="ov-low">0</div><div class="stat-icon">⚠️</div></div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><span class="card-title">📊 Sales This Week</span></div>
+          <div class="bar-chart" id="weekChart"></div>
+          <div style="display:flex;gap:7px;margin-top:5px;" id="weekLabels"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">⚠️ Low Stock Alert</span></div>
+          <div class="table-wrap"><table><thead><tr><th>Product</th><th>Stock</th><th>Status</th></tr></thead><tbody id="lowTbl"><tr><td colspan="3" class="loading-cell"><div class="spin"></div></td></tr></tbody></table></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">🧾 Recent Transactions</span><button class="btn btn-ol btn-sm" onclick="goPage('pos')">+ New Sale</button></div>
+        <div class="table-wrap"><table><thead><tr><th>Time</th><th>Items</th><th>Total</th><th>Payment</th><th>Change</th></tr></thead><tbody id="recentTbl"><tr><td colspan="5" class="loading-cell"><div class="spin"></div></td></tr></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- POS -->
+    <div class="page" id="page-pos">
+      <div class="filter-bar">
+        <input class="search-inp" id="posSearch" placeholder="🔍 Search products..." oninput="filterPos()">
+        <select class="fc" id="posCat" style="width:auto;" onchange="filterPos()"><option value="">All Categories</option></select>
+      </div>
+      <div class="pos-layout">
+        <div class="pos-grid" id="posGrid"><div style="grid-column:1/-1;text-align:center;padding:40px"><div class="spin"></div></div></div>
+        <div class="cart-panel" id="cartPanel">
+          <div class="cart-head">🛒 Cart <span id="cartCount" style="background:var(--primary);color:#fff;border-radius:20px;padding:2px 10px;font-size:12px;">0</span>
+            <button class="btn btn-da btn-sm" onclick="clearCart()">🗑 Clear</button>
+          </div>
+          <div class="cart-items" id="cartItems"><div class="empty-cart">🛒<br>Cart is empty<br><small>Tap a product to add</small></div></div>
+          <div class="cart-foot">
+            <div class="cart-tot"><span class="cart-tot-lbl">Total</span><span class="cart-tot-val" id="cartTotal">₱0.00</span></div>
+            <button class="btn btn-su btn-full" onclick="openPayment()">💳 Checkout</button>
+          </div>
+        </div>
+      </div>
+      <button class="mob-cart-btn" id="mobCartBtn" onclick="toggleCart()">🛒 Cart · <span id="mobCartTotal">₱0</span></button>
+    </div>
+
+    <!-- INVENTORY -->
+    <div class="page" id="page-inventory">
+      <div class="filter-bar">
+        <input class="search-inp" id="invSearch" placeholder="🔍 Search inventory..." oninput="filterInv()">
+        <button class="btn btn-pr" onclick="openAddProd()">+ Add Product</button>
+        <button class="btn btn-se" onclick="openAddStock()">📦 Add Stock</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap"><table>
+          <thead><tr><th>Product</th><th>Category</th><th>Buy ₱</th><th>Sell ₱</th><th>Stock</th><th>Value</th><th>Actions</th></tr></thead>
+          <tbody id="invTbl"><tr><td colspan="7" class="loading-cell"><div class="spin"></div></td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- PRODUCT LIST -->
+    <div class="page" id="page-products">
+      <div class="filter-bar" id="prodCatChips"></div>
+      <div id="prodByCat"></div>
+    </div>
+
+    <!-- GCASH -->
+    <div class="page" id="page-gcash">
+      <div class="gcash-hdr">
+        <div style="font-size:11px;font-weight:700;opacity:.75;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">GCash Balance</div>
+        <div class="gcash-bal" id="gcashBal">₱0.00</div>
+        <div style="font-size:11px;opacity:.65;margin-top:3px;">Updated: <span id="gcashUpdated">—</span></div>
+      </div>
+      <div class="filter-bar">
+        <button class="btn btn-su" onclick="openGcash('in')">💚 Cash In</button>
+        <button class="btn btn-da" onclick="openGcash('out')">🔴 Cash Out</button>
+        <button class="btn btn-se" onclick="openGcash('load')">📱 Sell Load</button>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">GCash Transactions</span>
+          <select class="fc" id="gcashFilter" style="width:auto;" onchange="loadGcashTxns()"><option value="">All Types</option><option value="in">Cash In</option><option value="out">Cash Out</option><option value="load">Load</option></select>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Date</th><th>Type</th><th>Number</th><th>Amount</th><th>Profit</th><th>Note</th></tr></thead><tbody id="gcashTbl"><tr><td colspan="6" class="loading-cell"><div class="spin"></div></td></tr></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- DEBIT -->
+    <div class="page" id="page-debit">
+      <div class="debit-hdr">
+        <div style="font-size:11px;font-weight:700;opacity:.75;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Total Outstanding Debit</div>
+        <div class="gcash-bal" id="debitTotalAmt">₱0.00</div>
+        <div style="font-size:11px;opacity:.65;margin-top:3px;"><span id="debitCount">0</span> active debtors</div>
+      </div>
+      <div class="filter-bar">
+        <button class="btn btn-pr" onclick="openDebit('new')">+ New Debit Record</button>
+        <button class="btn btn-su" onclick="openDebit('pay')">✅ Record Payment</button>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">📋 Debit Records</span>
+          <select class="fc" id="debitFilter" style="width:auto;" onchange="loadDebitRecs()"><option value="">All</option><option value="pending">Pending</option><option value="partial">Partial</option><option value="paid">Paid</option></select>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Customer</th><th>Date</th><th>Items</th><th>Amount</th><th>Paid</th><th>Balance</th><th>Status</th><th>Action</th></tr></thead><tbody id="debitTbl"><tr><td colspan="8" class="loading-cell"><div class="spin"></div></td></tr></tbody></table></div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- PAYMENT MODAL -->
+<div class="modal-overlay" id="payModal">
+  <div class="modal">
+    <div class="modal-head"><span class="modal-title">💳 Process Payment</span><button class="close-btn" onclick="closeM('payModal')">✕</button></div>
+    <div class="modal-body">
+      <div style="background:var(--bg);border-radius:var(--rs);padding:12px;margin-bottom:14px;">
+        <div id="payItemList" style="font-size:12.5px;margin-bottom:7px;"></div>
+        <div style="display:flex;justify-content:space-between;font-weight:800;font-size:15px;border-top:1px solid var(--border);padding-top:7px;margin-top:7px;">
+          <span>Total</span><span id="payTotal" style="color:var(--primary)">₱0.00</span>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">Payment Method</label>
+        <select class="fc" id="payMethod"><option value="cash">💵 Cash</option><option value="gcash">💙 GCash</option><option value="debit">📋 Debit (Utang)</option></select>
+      </div>
+      <div id="cashSection">
+        <div class="fg"><label class="fl">Amount Received</label>
+          <div class="pay-inp-wrap"><span class="currency">₱</span><input class="fc" type="number" id="payReceived" placeholder="0.00" oninput="calcChange()"></div>
+        </div>
+        <div class="change-box">
+          <span style="font-weight:700;">Change</span>
+          <span id="payChange" style="font-family:'Nunito';font-weight:900;font-size:19px;color:var(--accent)">₱0.00</span>
+        </div>
+      </div>
+      <div id="debitSection" style="display:none;">
+        <div class="fg"><label class="fl">Customer Name *</label><input class="fc" type="text" id="payDebtor" placeholder="Customer name"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-gy" onclick="closeM('payModal')">Cancel</button>
+      <button class="btn btn-su" id="confirmPayBtn" onclick="processPayment()">✅ Confirm Sale</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD PRODUCT MODAL -->
+<div class="modal-overlay" id="prodModal">
+  <div class="modal">
+    <div class="modal-head"><span class="modal-title" id="prodModalTitle">➕ Add Product</span><button class="close-btn" onclick="closeM('prodModal')">✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="editProdId">
+      <div class="fr2">
+        <div class="fg"><label class="fl">Product Name *</label><input class="fc" id="pName" placeholder="e.g. Skyflakes"></div>
+        <div class="fg"><label class="fl">Category *</label>
+          <select class="fc" id="pCat">
+            <option>Snacks</option><option>Beverages</option><option>Condiments</option>
+            <option>Canned Goods</option><option>Instant Noodles</option>
+            <option>Personal Care</option><option>Household</option><option>Others</option>
+          </select>
+        </div>
+      </div>
+      <div class="fr2">
+        <div class="fg"><label class="fl">Buy Price (₱) *</label><input class="fc" type="number" id="pBuy" placeholder="0.00" step="0.01"></div>
+        <div class="fg"><label class="fl">Sell Price (₱) *</label><input class="fc" type="number" id="pSell" placeholder="0.00" step="0.01"></div>
+      </div>
+      <div class="fr3">
+        <div class="fg"><label class="fl">Initial Stock</label><input class="fc" type="number" id="pStock" placeholder="0" min="0"></div>
+        <div class="fg"><label class="fl">Low Stock Alert</label><input class="fc" type="number" id="pLow" placeholder="5" min="0"></div>
+        <div class="fg"><label class="fl">Emoji Icon</label><input class="fc" id="pEmoji" placeholder="📦" maxlength="4"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-gy" onclick="closeM('prodModal')">Cancel</button>
+      <button class="btn btn-pr" onclick="saveProd()">💾 Save Product</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD STOCK MODAL -->
+<div class="modal-overlay" id="stockModal">
+  <div class="modal">
+    <div class="modal-head"><span class="modal-title">📦 Add Stock</span><button class="close-btn" onclick="closeM('stockModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="fg"><label class="fl">Product *</label><select class="fc" id="stProd"></select></div>
+      <div class="fr2">
+        <div class="fg"><label class="fl">Quantity to Add *</label><input class="fc" type="number" id="stQty" placeholder="0" min="1"></div>
+        <div class="fg"><label class="fl">Update Buy Price (optional)</label><input class="fc" type="number" id="stBuy" placeholder="Keep current" step="0.01"></div>
+      </div>
+      <div class="fg"><label class="fl">Note</label><input class="fc" id="stNote" placeholder="e.g. Restock from supplier"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-gy" onclick="closeM('stockModal')">Cancel</button>
+      <button class="btn btn-pr" onclick="saveStock()">✅ Add Stock</button>
+    </div>
+  </div>
+</div>
+
+<!-- GCASH MODAL -->
+<div class="modal-overlay" id="gcashModal">
+  <div class="modal">
+    <div class="modal-head"><span class="modal-title" id="gcashModalTitle">💙 GCash Transaction</span><button class="close-btn" onclick="closeM('gcashModal')">✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="gcashType">
+      <div class="fg"><label class="fl">GCash Number</label><input class="fc" id="gcNum" placeholder="09XX-XXX-XXXX"></div>
+      <div class="fg"><label class="fl">Amount (₱) *</label><input class="fc" type="number" id="gcAmt" placeholder="0.00" step="0.01"></div>
+      <div id="gcLoadSection" style="display:none;">
+        <div class="fr2">
+          <div class="fg"><label class="fl">Network</label>
+            <select class="fc" id="gcNet"><option>Globe</option><option>Smart</option><option>TNT</option><option>Sun</option><option>DITO</option></select>
+          </div>
+          <div class="fg"><label class="fl">Load Profit (₱)</label><input class="fc" type="number" id="gcProfit" placeholder="1.00" step="0.01" value="1"></div>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">Note</label><input class="fc" id="gcNote" placeholder="Optional note"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-gy" onclick="closeM('gcashModal')">Cancel</button>
+      <button class="btn btn-pr" onclick="saveGcash()">✅ Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- DEBIT MODAL -->
+<div class="modal-overlay" id="debitModal">
+  <div class="modal">
+    <div class="modal-head"><span class="modal-title" id="debitModalTitle">📋 New Debit Record</span><button class="close-btn" onclick="closeM('debitModal')">✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="debitAction">
+      <div id="debitNewSec">
+        <div class="fg"><label class="fl">Customer Name *</label><input class="fc" id="dbCustomer" placeholder="Customer name"></div>
+        <div class="fg"><label class="fl">Items / Description *</label><input class="fc" id="dbItems" placeholder="e.g. Milo x2, Lucky Me x3"></div>
+        <div class="fg"><label class="fl">Amount (₱) *</label><input class="fc" type="number" id="dbAmt" placeholder="0.00" step="0.01"></div>
+        <div class="fg"><label class="fl">Note</label><input class="fc" id="dbNote" placeholder="Optional note"></div>
+      </div>
+      <div id="debitPaySec" style="display:none;">
+        <div class="fg"><label class="fl">Select Customer *</label><select class="fc" id="dbDebtor" onchange="updateDebitInfo()"></select></div>
+        <div id="dbInfo" style="background:var(--bg);padding:10px 13px;border-radius:var(--rs);font-size:13px;margin-bottom:14px;"></div>
+        <div class="fg"><label class="fl">Payment Amount (₱) *</label><input class="fc" type="number" id="dbPayAmt" placeholder="0.00" step="0.01"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-gy" onclick="closeM('debitModal')">Cancel</button>
+      <button class="btn btn-pr" onclick="saveDebit()">✅ Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div id="toasts"></div>
+
+<!-- ALL SCRIPTS AT THE BOTTOM -->
+<script>
+// ─── DEMO DATA ───────────────────────────────────────────────
+const DEMO = {
+  nid: 200,
+  products: [
+    {id:1,name:'Skyflakes',category:'Snacks',buy_price:8,sell_price:10,stock:45,low_stock_alert:10,emoji:'🍪'},
+    {id:2,name:'Nova',category:'Snacks',buy_price:10,sell_price:12,stock:30,low_stock_alert:10,emoji:'🌽'},
+    {id:3,name:'Milo 3in1',category:'Beverages',buy_price:12,sell_price:15,stock:60,low_stock_alert:15,emoji:'🍫'},
+    {id:4,name:'Coke Sakto',category:'Beverages',buy_price:18,sell_price:22,stock:5,low_stock_alert:12,emoji:'🥤'},
+    {id:5,name:'Lucky Me Pork',category:'Instant Noodles',buy_price:9,sell_price:12,stock:50,low_stock_alert:10,emoji:'🍜'},
+    {id:6,name:'Datu Puti Soy',category:'Condiments',buy_price:20,sell_price:25,stock:8,low_stock_alert:5,emoji:'🧂'},
+    {id:7,name:'555 Sardines',category:'Canned Goods',buy_price:32,sell_price:38,stock:3,low_stock_alert:6,emoji:'🥫'},
+    {id:8,name:'Safeguard',category:'Personal Care',buy_price:30,sell_price:38,stock:12,low_stock_alert:5,emoji:'🧼'},
+  ],
+  transactions: [
+    {id:1,items:'Skyflakes x2, Milo x1',total:35,cost:28,profit:7,payment:'cash',received:50,change:15,customer:'',created_at:new Date(Date.now()-3600000).toISOString()},
+    {id:2,items:'Lucky Me x3',total:36,cost:27,profit:9,payment:'gcash',received:36,change:0,customer:'',created_at:new Date(Date.now()-7200000).toISOString()},
+  ],
+  gcash: [
+    {id:1,type:'in',number:'09171234567',amount:500,profit:0,network:null,note:'Cash in',created_at:new Date(Date.now()-86400000).toISOString()},
+    {id:2,type:'load',number:'09991234567',amount:50,profit:1,network:'Globe',note:'',created_at:new Date(Date.now()-3600000).toISOString()},
+  ],
+  debit: [
+    {id:1,customer:'Aling Nena',items:'Milo x2, Lucky Me x3',amount:66,paid:30,balance:36,status:'partial',created_at:new Date(Date.now()-172800000).toISOString(),note:''},
+    {id:2,customer:'Kuya Ben',items:'Coke x4, Nova x2',amount:112,paid:0,balance:112,status:'pending',created_at:new Date(Date.now()-86400000).toISOString(),note:'Bukas'},
+  ]
+};
+
+// ─── STATE ───────────────────────────────────────────────────
+let SB = null;       // supabase client
+let DEMO_MODE = false;
+let products = [];
+let cart = [];
+
+// ─── HELPERS ─────────────────────────────────────────────────
+const p2 = (n) => parseFloat(n||0).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});
+const today = () => new Date().toISOString().split('T')[0];
+const fmtDT = (d) => new Date(d).toLocaleString('en-PH',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+const fmtT  = (d) => new Date(d).toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'});
+
+function toast(msg, type='') {
+  const t = document.createElement('div');
+  t.className = 'toast' + (type ? ' t-'+type : '');
+  t.textContent = msg;
+  document.getElementById('toasts').appendChild(t);
+  setTimeout(() => t.remove(), 3200);
+}
+
+function openM(id)  { document.getElementById(id).classList.add('show'); }
+function closeM(id) { document.getElementById(id).classList.remove('show'); }
+
+// ─── SUPABASE CONNECT ─────────────────────────────────────────
+async function connectDB() {
+  const url = document.getElementById('sbUrl').value.trim();
+  const key = document.getElementById('sbKey').value.trim();
+  const status = document.getElementById('connectStatus');
+  const btn    = document.getElementById('connectBtn');
+
+  if (!url || !key) { status.style.color='var(--danger)'; status.textContent='⚠️ Please enter both URL and Key.'; return; }
+  if (!url.includes('supabase.co')) { status.style.color='var(--danger)'; status.textContent='⚠️ URL should end with .supabase.co'; return; }
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Connecting...';
+  status.style.color = 'var(--text-muted)';
+  status.textContent = 'Testing connection...';
+
+  try {
+    SB = supabase.createClient(url, key);
+    // Test actual query
+    const { error } = await SB.from('products').select('id').limit(1);
+    if (error && error.code !== 'PGRST116') {
+      // PGRST116 = table not found = DB connected but table missing (that's ok, show schema hint)
+      throw new Error(error.message);
+    }
+    localStorage.setItem('sb_url', url);
+    localStorage.setItem('sb_key', key);
+    status.style.color = 'var(--accent)';
+    status.textContent = '✅ Connected!';
+    setTimeout(startApp, 600);
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = '🔗 Connect & Start';
+    status.style.color = 'var(--danger)';
+    status.textContent = '❌ ' + e.message;
+    SB = null;
+  }
+}
+
+function startDemo() {
+  DEMO_MODE = true;
+  startApp();
+}
+
+function startApp() {
+  const scr = document.getElementById('setupScreen');
+  if (scr) scr.style.display = 'none';
+  loadProducts().then(() => {
+    loadOverview();
+    populateCatFilters();
+  });
+  if (!DEMO_MODE) toast('Connected to Supabase ✅', 'ok');
+  else toast('Demo mode active 🎭', 'in');
+}
+
+// ─── AUTO-RECONNECT ───────────────────────────────────────────
+window.addEventListener('load', () => {
+  // Set date
+  document.getElementById('dateDisplay').textContent =
+    new Date().toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'});
+
+  // Wire up buttons
+  document.getElementById('connectBtn').addEventListener('click', connectDB);
+  document.getElementById('demoBtn').addEventListener('click', startDemo);
+  document.getElementById('menuBtn').addEventListener('click', toggleSidebar);
+  document.getElementById('overlay').addEventListener('click', closeSidebar);
+  document.getElementById('payMethod').addEventListener('change', function() {
+    const m = this.value;
+    document.getElementById('cashSection').style.display   = m !== 'debit' ? 'block' : 'none';
+    document.getElementById('debitSection').style.display  = m === 'debit' ? 'block' : 'none';
+  });
+
+  // Nav items
+  document.querySelectorAll('.nav-item[data-page]').forEach(el => {
+    el.addEventListener('click', () => goPage(el.dataset.page));
+  });
+
+  // Modal overlays close on bg click
+  document.querySelectorAll('.modal-overlay').forEach(el => {
+    el.addEventListener('click', e => { if(e.target===el) el.classList.remove('show'); });
+  });
+
+  // Auto-reconnect from localStorage
+  const url = localStorage.getItem('sb_url');
+  const key = localStorage.getItem('sb_key');
+  if (url && key) {
+    document.getElementById('sbUrl').value = url;
+    document.getElementById('sbKey').value = key;
+    connectDB();
+  }
+});
+
+// ─── NAVIGATION ───────────────────────────────────────────────
+const PAGE_TITLES = {overview:'📊 Overview',pos:'🛒 Point of Sale',inventory:'📦 Inventory',products:'🗂️ Product List',gcash:'💙 GCash',debit:'📋 Debit Records'};
+
+function goPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  const nav = document.querySelector(`.nav-item[data-page="${name}"]`);
+  if (nav) nav.classList.add('active');
+  document.getElementById('pageTitle').textContent = PAGE_TITLES[name] || name;
+  closeSidebar();
+  if (name==='overview')  loadOverview();
+  if (name==='pos')       renderPos();
+  if (name==='inventory') loadInv();
+  if (name==='products')  loadProdList();
+  if (name==='gcash')   { loadGcashBal(); loadGcashTxns(); }
+  if (name==='debit')     loadDebitRecs();
+}
+
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('show'); }
+function closeSidebar()  { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
+
+// ─── PRODUCTS ─────────────────────────────────────────────────
+async function loadProducts() {
+  if (DEMO_MODE) { products = [...DEMO.products]; return; }
+  const { data, error } = await SB.from('products').select('*').order('name');
+  if (error) { toast('Error loading products: '+error.message,'er'); return; }
+  products = data || [];
+}
+
+function populateCatFilters() {
+  const cats = [...new Set(products.map(p=>p.category))].sort();
+  const sel = document.getElementById('posCat');
+  sel.innerHTML = '<option value="">All Categories</option>' + cats.map(c=>`<option>${c}</option>`).join('');
+}
+
+async function loadInv() {
+  await loadProducts();
+  filterInv();
+}
+
+function filterInv() {
+  const q = (document.getElementById('invSearch').value||'').toLowerCase();
+  const list = products.filter(p=>p.name.toLowerCase().includes(q)||p.category.toLowerCase().includes(q));
+  const tb = document.getElementById('invTbl');
+  if (!list.length) { tb.innerHTML=`<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--text-muted)">No products found</td></tr>`; return; }
+  tb.innerHTML = list.map(p=>{
+    const sc = p.stock<=0?'b-re':p.stock<=p.low_stock_alert?'b-ye':'b-gr';
+    const sl = p.stock<=0?'Out':p.stock<=(p.low_stock_alert||5)?'Low':'OK';
+    return `<tr>
+      <td><b>${p.emoji||'📦'} ${p.name}</b></td>
+      <td><span class="badge b-bl">${p.category}</span></td>
+      <td>₱${p2(p.buy_price)}</td><td>₱${p2(p.sell_price)}</td>
+      <td><span class="badge ${sc}">${sl}</span> <b>${p.stock}</b></td>
+      <td>₱${p2(p.stock*p.buy_price)}</td>
+      <td style="display:flex;gap:5px;">
+        <button class="btn btn-ol btn-sm" onclick="openEditProd(${p.id})">✏️</button>
+        <button class="btn btn-se btn-sm" onclick="qkStock(${p.id})">+📦</button>
+        <button class="btn btn-da btn-sm" onclick="delProd(${p.id})">🗑</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function openAddProd() {
+  document.getElementById('prodModalTitle').textContent='➕ Add Product';
+  document.getElementById('editProdId').value='';
+  ['pName','pBuy','pSell'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('pCat').value='Snacks';
+  document.getElementById('pStock').value='0';
+  document.getElementById('pLow').value='5';
+  document.getElementById('pEmoji').value='📦';
+  openM('prodModal');
+}
+
+function openEditProd(id) {
+  const p=products.find(x=>x.id==id); if(!p) return;
+  document.getElementById('prodModalTitle').textContent='✏️ Edit Product';
+  document.getElementById('editProdId').value=id;
+  document.getElementById('pName').value=p.name;
+  document.getElementById('pCat').value=p.category;
+  document.getElementById('pBuy').value=p.buy_price;
+  document.getElementById('pSell').value=p.sell_price;
+  document.getElementById('pStock').value=p.stock;
+  document.getElementById('pLow').value=p.low_stock_alert||5;
+  document.getElementById('pEmoji').value=p.emoji||'📦';
+  openM('prodModal');
+}
+
+async function saveProd() {
+  const id=document.getElementById('editProdId').value;
+  const d={
+    name:document.getElementById('pName').value.trim(),
+    category:document.getElementById('pCat').value,
+    buy_price:parseFloat(document.getElementById('pBuy').value)||0,
+    sell_price:parseFloat(document.getElementById('pSell').value)||0,
+    stock:parseInt(document.getElementById('pStock').value)||0,
+    low_stock_alert:parseInt(document.getElementById('pLow').value)||5,
+    emoji:document.getElementById('pEmoji').value||'📦'
+  };
+  if(!d.name){toast('Product name required','er');return;}
+  if(DEMO_MODE){
+    if(id){const i=DEMO.products.findIndex(p=>p.id==id);if(i>=0)DEMO.products[i]={...DEMO.products[i],...d};}
+    else DEMO.products.push({id:++DEMO.nid,...d});
+  } else {
+    const {error}=id ? await SB.from('products').update(d).eq('id',id) : await SB.from('products').insert(d);
+    if(error){toast('Save error: '+error.message,'er');return;}
+  }
+  closeM('prodModal');
+  await loadProducts();
+  filterInv(); renderPos(); populateCatFilters();
+  toast(id?'Product updated ✅':'Product added ✅','ok');
+}
+
+async function delProd(id) {
+  if(!confirm('Delete this product?'))return;
+  if(DEMO_MODE){DEMO.products=DEMO.products.filter(p=>p.id!=id);}
+  else{const{error}=await SB.from('products').delete().eq('id',id);if(error){toast(error.message,'er');return;}}
+  await loadProducts(); filterInv();
+  toast('Product deleted','in');
+}
+
+function openAddStock() {
+  const sel=document.getElementById('stProd');
+  sel.innerHTML=products.map(p=>`<option value="${p.id}">${p.emoji||'📦'} ${p.name} (stock: ${p.stock})</option>`).join('');
+  document.getElementById('stQty').value='';
+  document.getElementById('stBuy').value='';
+  document.getElementById('stNote').value='';
+  openM('stockModal');
+}
+
+function qkStock(id){openAddStock();document.getElementById('stProd').value=id;}
+
+async function saveStock() {
+  const pid=document.getElementById('stProd').value;
+  const qty=parseInt(document.getElementById('stQty').value);
+  if(!qty||qty<1){toast('Enter valid quantity','er');return;}
+  const prod=products.find(p=>p.id==pid);if(!prod)return;
+  const newBuy=parseFloat(document.getElementById('stBuy').value)||prod.buy_price;
+  if(DEMO_MODE){
+    const p=DEMO.products.find(x=>x.id==pid);
+    if(p){p.stock+=qty;p.buy_price=newBuy;}
+  } else {
+    const {error}=await SB.from('products').update({stock:prod.stock+qty,buy_price:newBuy}).eq('id',pid);
+    if(error){toast(error.message,'er');return;}
+    await SB.from('stock_logs').insert({product_id:pid,qty_added:qty,buy_price:newBuy,note:document.getElementById('stNote').value});
+  }
+  closeM('stockModal');
+  await loadProducts(); filterInv();
+  toast(`Added ${qty} units to ${prod.name} ✅`,'ok');
+}
+
+// ─── POS ──────────────────────────────────────────────────────
+function renderPos() { populateCatFilters(); filterPos(); }
+
+function filterPos() {
+  const q=(document.getElementById('posSearch').value||'').toLowerCase();
+  const cat=document.getElementById('posCat').value;
+  const list=products.filter(p=>{
+    const mq=p.name.toLowerCase().includes(q)||p.category.toLowerCase().includes(q);
+    const mc=!cat||p.category===cat;
+    return mq&&mc;
+  });
+  const grid=document.getElementById('posGrid');
+  if(!list.length){grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted)">No products found</div>`;return;}
+  grid.innerHTML=list.map(p=>`
+    <div class="prod-tile${p.stock<=0?' oos':''}" ${p.stock>0?`onclick="addCart(${p.id})"`:''}>
+      ${p.stock>0&&p.stock<=(p.low_stock_alert||5)?'<span class="low-badge">LOW</span>':''}
+      <div class="prod-emoji">${p.emoji||'📦'}</div>
+      <div class="prod-name">${p.name}</div>
+      <div class="prod-price">₱${p2(p.sell_price)}</div>
+      <div class="prod-stock">${p.stock<=0?'Out of Stock':'Stock: '+p.stock}</div>
+    </div>`).join('');
+}
+
+function addCart(id) {
+  const p=products.find(x=>x.id==id);if(!p||p.stock<=0)return;
+  const ex=cart.find(c=>c.id==id);
+  if(ex){if(ex.qty>=p.stock){toast('Not enough stock','er');return;}ex.qty++;}
+  else cart.push({id:p.id,name:p.name,price:p.sell_price,buy:p.buy_price,qty:1,emoji:p.emoji||'📦'});
+  renderCart();
+  toast(`${p.emoji||'📦'} ${p.name} added`,'ok');
+}
+
+function renderCart() {
+  const total=cart.reduce((s,c)=>s+c.price*c.qty,0);
+  const count=cart.reduce((s,c)=>s+c.qty,0);
+  document.getElementById('cartTotal').textContent='₱'+p2(total);
+  document.getElementById('cartCount').textContent=count;
+  document.getElementById('mobCartTotal').textContent='₱'+p2(total);
+  const el=document.getElementById('cartItems');
+  if(!cart.length){el.innerHTML='<div class="empty-cart">🛒<br>Cart is empty<br><small>Tap a product to add</small></div>';return;}
+  el.innerHTML=cart.map(c=>`
+    <div class="cart-item">
+      <span style="font-size:19px;">${c.emoji}</span>
+      <div style="flex:1;"><div class="cart-item-name">${c.name}</div><div style="font-size:10.5px;color:var(--text-muted);">₱${p2(c.price)} each</div></div>
+      <div class="qty-ctrl">
+        <button class="qty-btn" onclick="chgQty(${c.id},-1)">−</button>
+        <span class="qty-val">${c.qty}</span>
+        <button class="qty-btn" onclick="chgQty(${c.id},1)">+</button>
+      </div>
+      <span class="cart-item-price">₱${p2(c.price*c.qty)}</span>
+    </div>`).join('');
+}
+
+function chgQty(id,d){const i=cart.findIndex(c=>c.id==id);if(i<0)return;cart[i].qty+=d;if(cart[i].qty<=0)cart.splice(i,1);renderCart();}
+function clearCart(){cart=[];renderCart();}
+function toggleCart(){document.getElementById('cartPanel').classList.toggle('show');}
+
+function openPayment() {
+  if(!cart.length){toast('Cart is empty','er');return;}
+  const total=cart.reduce((s,c)=>s+c.price*c.qty,0);
+  document.getElementById('payTotal').textContent='₱'+p2(total);
+  document.getElementById('payItemList').innerHTML=cart.map(c=>`<div style="display:flex;justify-content:space-between;padding:2px 0;"><span>${c.emoji} ${c.name} ×${c.qty}</span><span>₱${p2(c.price*c.qty)}</span></div>`).join('');
+  document.getElementById('payReceived').value='';
+  document.getElementById('payChange').textContent='₱0.00';
+  document.getElementById('payDebtor').value='';
+  document.getElementById('payMethod').value='cash';
+  document.getElementById('cashSection').style.display='block';
+  document.getElementById('debitSection').style.display='none';
+  openM('payModal');
+}
+
+function calcChange() {
+  const total=cart.reduce((s,c)=>s+c.price*c.qty,0);
+  const rec=parseFloat(document.getElementById('payReceived').value)||0;
+  const ch=rec-total;
+  const el=document.getElementById('payChange');
+  el.textContent=(ch>=0?'₱':'-₱')+p2(Math.abs(ch));
+  el.style.color=ch>=0?'var(--accent)':'var(--danger)';
+}
+
+async function processPayment() {
+  const total=cart.reduce((s,c)=>s+c.price*c.qty,0);
+  const cost=cart.reduce((s,c)=>s+c.buy*c.qty,0);
+  const method=document.getElementById('payMethod').value;
+  const received=method==='debit'?0:parseFloat(document.getElementById('payReceived').value)||0;
+  if(method==='cash'&&received<total){toast('Insufficient amount','er');return;}
+  const change=method==='cash'?received-total:0;
+  const customer=method==='debit'?document.getElementById('payDebtor').value.trim():'';
+  if(method==='debit'&&!customer){toast('Enter customer name','er');return;}
+
+  const btn=document.getElementById('confirmPayBtn');
+  btn.disabled=true;btn.textContent='⏳ Processing...';
+
+  const itemsTxt=cart.map(c=>`${c.name} ×${c.qty}`).join(', ');
+  try{
+    if(DEMO_MODE){
+      DEMO.transactions.unshift({id:++DEMO.nid,items:itemsTxt,total,cost,profit:total-cost,payment:method,received,change,customer,created_at:new Date().toISOString()});
+      cart.forEach(c=>{const p=DEMO.products.find(x=>x.id==c.id);if(p)p.stock-=c.qty;});
+      if(method==='debit')DEMO.debit.unshift({id:++DEMO.nid,customer,items:itemsTxt,amount:total,paid:0,balance:total,status:'pending',created_at:new Date().toISOString(),note:''});
+    } else {
+      const {data:txn,error:te}=await SB.from('transactions').insert({items:itemsTxt,total,cost,profit:total-cost,payment:method,received,change:change,customer}).select().single();
+      if(te)throw te;
+      if(txn){
+        await SB.from('transaction_items').insert(cart.map(c=>({transaction_id:txn.id,product_id:c.id,product_name:c.name,qty:c.qty,sell_price:c.price,buy_price:c.buy})));
+      }
+      for(const c of cart){
+        const prod=products.find(x=>x.id==c.id);
+        if(prod)await SB.from('products').update({stock:prod.stock-c.qty}).eq('id',c.id);
+      }
+      if(method==='debit')await SB.from('debit_records').insert({customer,items:itemsTxt,amount:total,paid:0,balance:total,status:'pending'});
+    }
+    closeM('payModal');
+    clearCart();
+    await loadProducts(); filterPos();
+    toast(`Sale done! Change: ₱${p2(change)} 🎉`,'ok');
+  }catch(e){toast('Error: '+e.message,'er');}
+  finally{btn.disabled=false;btn.textContent='✅ Confirm Sale';}
+}
+
+// ─── OVERVIEW ────────────────────────────────────────────────
+async function loadOverview() {
+  const td=today();
+  let sales=0,profit=0,txns=0,recent=[],lowStock=[],weekly=[];
+
+  if(DEMO_MODE){
+    const dayTxns=DEMO.transactions.filter(t=>t.created_at.startsWith(td));
+    sales=dayTxns.reduce((s,t)=>s+t.total,0);
+    profit=dayTxns.reduce((s,t)=>s+(t.profit||0),0);
+    txns=dayTxns.length;
+    recent=DEMO.transactions.slice(0,8);
+    lowStock=DEMO.products.filter(p=>p.stock<=(p.low_stock_alert||5));
+    for(let i=6;i>=0;i--){
+      const d=new Date();d.setDate(d.getDate()-i);
+      const ds=d.toISOString().split('T')[0];
+      weekly.push({lbl:d.toLocaleDateString('en',{weekday:'short'}),val:DEMO.transactions.filter(t=>t.created_at.startsWith(ds)).reduce((s,t)=>s+t.total,0)});
+    }
+  } else {
+    const{data:dt}=await SB.from('transactions').select('*').gte('created_at',td+'T00:00:00').lte('created_at',td+'T23:59:59');
+    (dt||[]).forEach(t=>{sales+=parseFloat(t.total||0);profit+=parseFloat(t.profit||0);txns++;});
+    const{data:rt}=await SB.from('transactions').select('*').order('created_at',{ascending:false}).limit(8);
+    recent=rt||[];
+    await loadProducts();
+    lowStock=products.filter(p=>p.stock<=(p.low_stock_alert||5));
+    for(let i=6;i>=0;i--){
+      const d=new Date();d.setDate(d.getDate()-i);
+      const ds=d.toISOString().split('T')[0];
+      const{data:wd}=await SB.from('transactions').select('total').gte('created_at',ds+'T00:00:00').lte('created_at',ds+'T23:59:59');
+      weekly.push({lbl:d.toLocaleDateString('en',{weekday:'short'}),val:(wd||[]).reduce((s,t)=>s+parseFloat(t.total||0),0)});
+    }
+  }
+
+  // GCash balance
+  let gcBal=0;
+  if(DEMO_MODE){gcBal=DEMO.gcash.reduce((s,t)=>s+(t.type==='in'?t.amount:t.type==='load'?t.profit:-t.amount),0);}
+  else{const{data:gc}=await SB.from('gcash_transactions').select('type,amount,profit');gcBal=(gc||[]).reduce((s,t)=>s+(t.type==='in'?parseFloat(t.amount||0):t.type==='load'?parseFloat(t.profit||0):-parseFloat(t.amount||0)),0);}
+
+  // Debit total
+  let debitTotal=0;
+  if(DEMO_MODE){debitTotal=DEMO.debit.filter(d=>d.status!=='paid').reduce((s,d)=>s+d.balance,0);}
+  else{const{data:db}=await SB.from('debit_records').select('balance').neq('status','paid');debitTotal=(db||[]).reduce((s,d)=>s+parseFloat(d.balance||0),0);}
+
+  document.getElementById('ov-sales').textContent='₱'+p2(sales);
+  document.getElementById('ov-profit').textContent='₱'+p2(profit);
+  document.getElementById('ov-txn').textContent=txns;
+  document.getElementById('ov-gcash').textContent='₱'+p2(gcBal);
+  document.getElementById('ov-debit').textContent='₱'+p2(debitTotal);
+  document.getElementById('ov-low').textContent=lowStock.length;
+
+  // Chart
+  const maxV=Math.max(...weekly.map(w=>w.val),1);
+  document.getElementById('weekChart').innerHTML=weekly.map(w=>`<div class="bar-grp"><div class="bar" style="background:var(--primary);height:${Math.max(3,(w.val/maxV)*140)}px;opacity:${w.val>0?.85:.2}" data-val="₱${p2(w.val)}"></div></div>`).join('');
+  document.getElementById('weekLabels').innerHTML=weekly.map(w=>`<div style="flex:1;text-align:center;font-size:9.5px;color:var(--text-muted);font-weight:600;">${w.lbl}</div>`).join('');
+
+  // Low stock table
+  const ls=document.getElementById('lowTbl');
+  ls.innerHTML=lowStock.length?lowStock.slice(0,6).map(p=>`<tr><td><b>${p.emoji||'📦'} ${p.name}</b></td><td><b>${p.stock}</b></td><td><span class="badge ${p.stock<=0?'b-re':'b-ye'}">${p.stock<=0?'Out of Stock':'Low Stock'}</span></td></tr>`).join(''):`<tr><td colspan="3" style="text-align:center;padding:18px;color:var(--text-muted)">✅ All stocks OK!</td></tr>`;
+
+  // Recent txns
+  const rt2=document.getElementById('recentTbl');
+  rt2.innerHTML=recent.length?recent.map(t=>`<tr>
+    <td style="white-space:nowrap;">${fmtT(t.created_at)}</td>
+    <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${t.items}">${t.items}</td>
+    <td><b>₱${p2(t.total)}</b></td>
+    <td><span class="badge ${t.payment==='cash'?'b-gr':t.payment==='gcash'?'b-bl':'b-re'}">${t.payment}</span></td>
+    <td>₱${p2(t.change||0)}</td>
+  </tr>`).join(''):`<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text-muted)">No transactions today</td></tr>`;
+}
+
+// ─── PRODUCT LIST ─────────────────────────────────────────────
+function loadProdList() {
+  const cats=[...new Set(products.map(p=>p.category))].sort();
+  const chips=document.getElementById('prodCatChips');
+  chips.innerHTML=`<span class="cat-chip active" data-cat="">All</span>`+cats.map(c=>`<span class="cat-chip" data-cat="${c}">${c}</span>`).join('');
+  chips.querySelectorAll('.cat-chip').forEach(el=>{
+    el.addEventListener('click',()=>{
+      chips.querySelectorAll('.cat-chip').forEach(x=>x.classList.remove('active'));
+      el.classList.add('active');
+      renderProdByCat(el.dataset.cat);
+    });
+  });
+  renderProdByCat('');
+}
+
+function renderProdByCat(filterCat) {
+  const cats=filterCat?[filterCat]:[...new Set(products.map(p=>p.category))].sort();
+  document.getElementById('prodByCat').innerHTML=cats.map(cat=>{
+    const ps=products.filter(p=>p.category===cat);
+    if(!ps.length)return'';
+    return`<div class="card"><div class="card-header"><span class="card-title">${cat}</span><span class="badge b-bl">${ps.length} items</span></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;">
+      ${ps.map(p=>`<div style="background:var(--bg);border-radius:var(--rs);padding:12px;text-align:center;border:1px solid var(--border);">
+        <div style="font-size:26px;">${p.emoji||'📦'}</div>
+        <div style="font-weight:700;font-size:12.5px;margin:5px 0 2px;">${p.name}</div>
+        <div style="color:var(--primary);font-weight:800;font-size:13px;">₱${p2(p.sell_price)}</div>
+        <div style="font-size:10px;color:var(--text-muted);">Stock: ${p.stock}</div>
+        <span class="badge ${p.stock<=0?'b-re':p.stock<=(p.low_stock_alert||5)?'b-ye':'b-gr'}" style="margin-top:5px;font-size:10px;">${p.stock<=0?'Out of Stock':p.stock<=(p.low_stock_alert||5)?'Low Stock':'Available'}</span>
+      </div>`).join('')}
+    </div></div>`;
+  }).join('');
+}
+
+// ─── GCASH ────────────────────────────────────────────────────
+async function loadGcashBal() {
+  let bal=0;
+  if(DEMO_MODE){bal=DEMO.gcash.reduce((s,t)=>s+(t.type==='in'?t.amount:t.type==='load'?t.profit:-t.amount),0);}
+  else{const{data}=await SB.from('gcash_transactions').select('type,amount,profit');bal=(data||[]).reduce((s,t)=>s+(t.type==='in'?parseFloat(t.amount||0):t.type==='load'?parseFloat(t.profit||0):-parseFloat(t.amount||0)),0);}
+  document.getElementById('gcashBal').textContent='₱'+p2(bal);
+  document.getElementById('gcashUpdated').textContent=new Date().toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit'});
+}
+
+async function loadGcashTxns() {
+  const f=document.getElementById('gcashFilter').value;
+  let data=[];
+  if(DEMO_MODE){data=f?DEMO.gcash.filter(t=>t.type===f):[...DEMO.gcash];}
+  else{
+    let q=SB.from('gcash_transactions').select('*').order('created_at',{ascending:false}).limit(50);
+    if(f)q=q.eq('type',f);
+    const{data:d}=await q;data=d||[];
+  }
+  const tb=document.getElementById('gcashTbl');
+  tb.innerHTML=data.length?data.map(t=>`<tr>
+    <td>${fmtDT(t.created_at)}</td>
+    <td><span class="badge ${t.type==='in'?'b-gr':t.type==='out'?'b-re':'b-bl'}">${t.type==='in'?'Cash In':t.type==='out'?'Cash Out':'Load'}</span></td>
+    <td>${t.number||'—'}</td>
+    <td><b>₱${p2(t.amount)}</b></td>
+    <td>${t.profit?'₱'+p2(t.profit):'—'}</td>
+    <td style="font-size:11.5px;color:var(--text-muted);">${t.note||'—'}</td>
+  </tr>`).join(''):`<tr><td colspan="6" style="text-align:center;padding:28px;color:var(--text-muted)">No transactions</td></tr>`;
+}
+
+function openGcash(type) {
+  document.getElementById('gcashType').value=type;
+  const titles={in:'💚 GCash Cash In',out:'🔴 GCash Cash Out',load:'📱 Sell Load'};
+  document.getElementById('gcashModalTitle').textContent=titles[type];
+  document.getElementById('gcLoadSection').style.display=type==='load'?'block':'none';
+  ['gcNum','gcAmt','gcNote'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('gcProfit').value='1';
+  openM('gcashModal');
+}
+
+async function saveGcash() {
+  const type=document.getElementById('gcashType').value;
+  const amount=parseFloat(document.getElementById('gcAmt').value)||0;
+  if(!amount){toast('Enter amount','er');return;}
+  const d={type,number:document.getElementById('gcNum').value,amount,profit:type==='load'?parseFloat(document.getElementById('gcProfit').value)||0:0,network:type==='load'?document.getElementById('gcNet').value:null,note:document.getElementById('gcNote').value};
+  if(DEMO_MODE){DEMO.gcash.unshift({id:++DEMO.nid,...d,created_at:new Date().toISOString()});}
+  else{const{error}=await SB.from('gcash_transactions').insert(d);if(error){toast(error.message,'er');return;}}
+  closeM('gcashModal'); loadGcashBal(); loadGcashTxns();
+  toast('GCash transaction saved ✅','ok');
+}
+
+// ─── DEBIT ────────────────────────────────────────────────────
+async function loadDebitRecs() {
+  const f=document.getElementById('debitFilter').value;
+  let data=[];
+  if(DEMO_MODE){data=f?DEMO.debit.filter(d=>d.status===f):[...DEMO.debit];}
+  else{
+    let q=SB.from('debit_records').select('*').order('created_at',{ascending:false}).limit(100);
+    if(f)q=q.eq('status',f);
+    const{data:d}=await q;data=d||[];
+  }
+  const pending=(DEMO_MODE?DEMO.debit:data).filter(d=>d.status!=='paid');
+  const total=pending.reduce((s,d)=>s+parseFloat(d.balance||0),0);
+  document.getElementById('debitTotalAmt').textContent='₱'+p2(total);
+  document.getElementById('debitCount').textContent=pending.length;
+
+  const tb=document.getElementById('debitTbl');
+  tb.innerHTML=data.length?data.map(d=>`<tr>
+    <td><b>${d.customer}</b></td>
+    <td style="white-space:nowrap;">${fmtDT(d.created_at)}</td>
+    <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11.5px;" title="${d.items}">${d.items}</td>
+    <td>₱${p2(d.amount)}</td><td>₱${p2(d.paid)}</td>
+    <td><b style="color:var(--danger);">₱${p2(d.balance)}</b></td>
+    <td><span class="badge ${d.status==='paid'?'b-gr':d.status==='partial'?'b-ye':'b-re'}">${d.status}</span></td>
+    <td style="display:flex;gap:4px;">
+      ${d.status!=='paid'?`<button class="btn btn-su btn-sm" onclick="qkPay(${d.id})">Pay</button>`:''}
+      <button class="btn btn-da btn-sm" onclick="delDebit(${d.id})">🗑</button>
+    </td>
+  </tr>`).join(''):`<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--text-muted)">No records</td></tr>`;
+}
+
+function openDebit(action) {
+  document.getElementById('debitAction').value=action;
+  if(action==='new'){
+    document.getElementById('debitModalTitle').textContent='📋 New Debit Record';
+    document.getElementById('debitNewSec').style.display='block';
+    document.getElementById('debitPaySec').style.display='none';
+    ['dbCustomer','dbItems','dbAmt','dbNote'].forEach(id=>document.getElementById(id).value='');
+  } else {
+    document.getElementById('debitModalTitle').textContent='✅ Record Payment';
+    document.getElementById('debitNewSec').style.display='none';
+    document.getElementById('debitPaySec').style.display='block';
+    const pending=(DEMO_MODE?DEMO.debit:JSON._lastDebitData||[]).filter(d=>d.status!=='paid');
+    const sel=document.getElementById('dbDebtor');
+    sel.innerHTML=pending.map(d=>`<option value="${d.id}">${d.customer} — ₱${p2(d.balance)}</option>`).join('');
+    document.getElementById('dbPayAmt').value='';
+    updateDebitInfo();
+  }
+  openM('debitModal');
+}
+
+function qkPay(id) { openDebit('pay'); setTimeout(()=>{document.getElementById('dbDebtor').value=id;updateDebitInfo();},50); }
+
+function updateDebitInfo() {
+  const id=document.getElementById('dbDebtor').value;
+  const all=DEMO_MODE?DEMO.debit:(JSON._lastDebitData||[]);
+  const rec=all.find(d=>d.id==id);
+  document.getElementById('dbInfo').innerHTML=rec?`<b>${rec.customer}</b> owes <span style="color:var(--danger);font-weight:800;">₱${p2(rec.balance)}</span>`:'';
+}
+
+async function saveDebit() {
+  const action=document.getElementById('debitAction').value;
+  if(action==='new'){
+    const customer=document.getElementById('dbCustomer').value.trim();
+    const items=document.getElementById('dbItems').value.trim();
+    const amount=parseFloat(document.getElementById('dbAmt').value)||0;
+    if(!customer||!amount){toast('Fill required fields','er');return;}
+    const rec={customer,items,amount,paid:0,balance:amount,status:'pending',note:document.getElementById('dbNote').value};
+    if(DEMO_MODE){DEMO.debit.unshift({id:++DEMO.nid,...rec,created_at:new Date().toISOString()});}
+    else{const{error}=await SB.from('debit_records').insert(rec);if(error){toast(error.message,'er');return;}}
+    toast('Debit record added ✅','ok');
+  } else {
+    const id=document.getElementById('dbDebtor').value;
+    const payAmt=parseFloat(document.getElementById('dbPayAmt').value)||0;
+    if(!payAmt){toast('Enter payment amount','er');return;}
+    const all=DEMO_MODE?DEMO.debit:[];
+    const rec=all.find(d=>d.id==id);
+    if(DEMO_MODE&&rec){
+      const np=parseFloat(rec.paid)+payAmt;
+      const nb=parseFloat(rec.amount)-np;
+      rec.paid=np;rec.balance=Math.max(0,nb);rec.status=nb<=0?'paid':'partial';
+    } else if(!DEMO_MODE){
+      // fetch current
+      const{data:curr}=await SB.from('debit_records').select('*').eq('id',id).single();
+      if(curr){
+        const np=parseFloat(curr.paid)+payAmt;
+        const nb=parseFloat(curr.amount)-np;
+        const{error}=await SB.from('debit_records').update({paid:np,balance:Math.max(0,nb),status:nb<=0?'paid':'partial',updated_at:new Date().toISOString()}).eq('id',id);
+        if(error){toast(error.message,'er');return;}
+      }
+    }
+    toast(`Payment ₱${p2(payAmt)} recorded ✅`,'ok');
+  }
+  closeM('debitModal'); loadDebitRecs();
+}
+
+async function delDebit(id) {
+  if(!confirm('Delete this record?'))return;
+  if(DEMO_MODE){DEMO.debit=DEMO.debit.filter(d=>d.id!=id);}
+  else{const{error}=await SB.from('debit_records').delete().eq('id',id);if(error){toast(error.message,'er');return;}}
+  loadDebitRecs(); toast('Record deleted','in');
+}
+</script>
+<!-- Load Supabase LAST so it's definitely available -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</body>
+</html>
